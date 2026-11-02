@@ -5,7 +5,7 @@ const FREE_SHIPPING_MINIMUM = 50;
 const SHIPPING_FEE = 9.99;
 
 // PayPal sandbox (test mode). The client ID is public by design; the app secret never belongs in front-end code.
-const PAYPAL_CLIENT_ID = "";
+const PAYPAL_CLIENT_ID = "AU-9nI92fSx0ahqEjKlgdr7abm8zTcJKMEls6dWjwja0kvJVgTggWT7v2ffEgJ_lAhgh21BRZ7vNVEIQ";
 const PAYPAL_CURRENCY = "CAD";
 
 const products = [
