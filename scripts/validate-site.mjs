@@ -80,15 +80,13 @@ if (productCount !== 6) errors.push(`Expected 6 NovaTech products, found ${produ
 
 const about = read("about.html");
 const roster = [
-    ["Nadeem Hassan", "Hass3285", "169093285"],
     ["Elias Zubaidi", "Zuba5051", "169065051"],
     ["Awale Hussein", "Huss8976", "169038976"],
     ["Hasan Muhammad", "Hasa9724", "169099724"],
     ["Omeed Attayi", "atta0147", "169060147"]
 ];
 
-// Nadeem Hassan authored an Assignment 1 blog post but is no longer part of the current team.
-const currentTeam = roster.filter(([name]) => name !== "Nadeem Hassan");
+const currentTeam = roster;
 for (const member of currentTeam) {
     for (const value of member) {
         if (!about.includes(value)) errors.push(`About page is missing roster value: ${value}`);
@@ -118,8 +116,8 @@ if (!blog.includes("purpose") || !blog.includes("roadmap") && !blog.includes("go
 
 const blogSource = read("blog.html");
 const blogPostCount = (blogSource.match(/class="team-blog-post"/g) || []).length;
-if (blogPostCount !== 5) {
-    errors.push(`Expected 5 individually authored team blog posts, found ${blogPostCount}.`);
+if (blogPostCount !== currentTeam.length) {
+    errors.push(`Expected ${currentTeam.length} individually authored team blog posts, found ${blogPostCount}.`);
 }
 
 const guidePosts = [...blogSource.matchAll(/<article class="team-blog-post guide-post" id="([^"]+)"[\s\S]*?<div class="team-post-content">([\s\S]*?)<\/div>/g)];

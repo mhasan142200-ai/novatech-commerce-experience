@@ -110,7 +110,7 @@ Potential extensions include automated browser tests, a separate API and databas
 
 ## Contributors & Project Context
 
-Assignment 2 team: **Elias Zubaidi** (payments and security), **Awale Hussein** (SEO and catalog), **Hasan Muhammad** (cart, QA and report), and **Omeed Attayi** (content and social media). Assignment 1 was built with **Nadeem Hassan**, who has since left the group. Team-written articles and project background remain available in the website.
+Assignment 2 team: **Elias Zubaidi** (payments and security), **Awale Hussein** (SEO and catalog), **Hasan Muhammad** (cart, QA and report), and **Omeed Attayi** (content and social media). Team-written articles and project background remain available in the website.
 
 This repository showcases the implemented storefront and technical choices. Individual contribution boundaries are not documented in the source history, so this README does not claim sole authorship.
 
