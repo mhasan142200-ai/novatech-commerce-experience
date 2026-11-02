@@ -3,7 +3,7 @@
     --ink-soft: #132743;
     --panel: #10233f;
     --coral: #ff5c74;
-    --coral-dark: #e4435c;
+    --coral-dark: #c9304a;
     --sky: #56c8ff;
     --mint: #71e6c1;
     --gold: #ffc857;
@@ -260,20 +260,20 @@ a {
     padding: 0.78rem 1.35rem;
     border: 1px solid transparent;
     border-radius: 11px;
-    background: var(--coral);
+    background: var(--coral-dark);
     color: var(--paper);
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 9px 22px rgba(255, 92, 116, 0.25);
+    box-shadow: 0 9px 22px rgba(201, 48, 74, 0.25);
     transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
 }
 
 .btn:hover,
 .checkout-btn:hover:not(:disabled),
 .newsletter-form button:hover {
-    background: var(--coral-dark);
+    background: #a8243b;
     transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(255, 92, 116, 0.3);
+    box-shadow: 0 12px 26px rgba(201, 48, 74, 0.3);
 }
 
 .btn-secondary {
