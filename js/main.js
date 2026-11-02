@@ -1,4 +1,12 @@
 const CART_KEY = "novatech_cart";
+const ORDER_KEY = "novatech_last_order";
+const TAX_RATE = 0.13;
+const FREE_SHIPPING_MINIMUM = 50;
+const SHIPPING_FEE = 9.99;
+
+// PayPal sandbox (test mode). The client ID is public by design; the app secret never belongs in front-end code.
+const PAYPAL_CLIENT_ID = "";
+const PAYPAL_CURRENCY = "CAD";
 
 const products = [
     {
@@ -7,6 +15,8 @@ const products = [
         category: "audio",
         price: 79.99,
         icon: "🎧",
+        image: "images/products/nova-wireless-earbuds-pro.svg",
+        alt: "Nova Wireless Earbuds Pro noise-cancelling earbuds in an open charging case",
         description: "Active noise cancellation, clear audio, and up to 24 hours of listening with the charging case."
     },
     {
@@ -15,6 +25,8 @@ const products = [
         category: "accessories",
         price: 29.99,
         icon: "📱",
+        image: "images/products/ultra-slim-armor-phone-case.svg",
+        alt: "Ultra-Slim Armor protective phone case with reinforced corners",
         description: "A slim protective shell with reinforced corners, a matte finish, and a comfortable grip."
     },
     {
@@ -23,6 +35,8 @@ const products = [
         category: "charging",
         price: 49.99,
         icon: "🔋",
+        image: "images/products/powervolt-20k-power-bank.svg",
+        alt: "PowerVolt 20K 20,000 mAh USB-C power bank with fast-charging cable",
         description: "A 20,000 mAh portable battery with 65W USB-C fast charging for phones, tablets, and laptops."
     },
     {
@@ -31,6 +45,8 @@ const products = [
         category: "wearables",
         price: 199.99,
         icon: "⌚",
+        image: "images/products/pulse-smartwatch-elite.svg",
+        alt: "Pulse Smartwatch Elite fitness watch displaying heart rate",
         description: "An AMOLED fitness watch with heart-rate tracking, activity insights, and seven-day battery life."
     },
     {
@@ -39,6 +55,8 @@ const products = [
         category: "audio",
         price: 39.99,
         icon: "🔊",
+        image: "images/products/soundwave-mini-speaker.svg",
+        alt: "SoundWave Mini waterproof portable Bluetooth speaker",
         description: "A compact IPX7 water-resistant Bluetooth speaker with balanced 360-degree sound."
     },
     {
@@ -47,6 +65,8 @@ const products = [
         category: "accessories",
         price: 59.99,
         icon: "⌨️",
+        image: "images/products/hyperconnect-7-in-1-usb-c-hub.svg",
+        alt: "HyperConnect 7-in-1 USB-C hub with HDMI, SD card and USB ports",
         description: "A USB-C hub with 4K HDMI, 100W power delivery, an SD reader, and three USB ports."
     }
 ];
@@ -141,8 +161,8 @@ function showToast(message) {
 function createProductCard(product) {
     return `
         <article class="product-card">
-            <div class="product-visual ${product.category}" role="img" aria-label="${product.name} product illustration">
-                <span class="product-icon" aria-hidden="true">${product.icon}</span>
+            <div class="product-visual ${product.category}">
+                <img class="product-image" src="${product.image}" alt="${product.alt}" width="320" height="240" loading="lazy">
             </div>
             <div class="product-info">
                 <span class="category-tag">${product.category}</span>
@@ -176,36 +196,55 @@ function renderProducts(itemsToRender = products) {
     container.innerHTML = itemsToRender.map(createProductCard).join("");
 }
 
+function getDetailedCart() {
+    return getCart().map(item => ({
+        ...products.find(product => product.id === item.id),
+        quantity: item.quantity
+    })).filter(item => item.id);
+}
+
+// Totals are kept in cents so the PayPal breakdown always adds up exactly.
+function calculateTotals(detailedCart) {
+    const subtotal = detailedCart.reduce((sum, item) => sum + Math.round(item.price * 100) * item.quantity, 0);
+    const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_MINIMUM * 100 ? 0 : Math.round(SHIPPING_FEE * 100);
+    const tax = Math.round((subtotal + shipping) * TAX_RATE);
+    return { subtotal, shipping, tax, total: subtotal + shipping + tax };
+}
+
+function formatMoney(cents) {
+    return `$${(cents / 100).toFixed(2)}`;
+}
+
+function renderSummaryTotals(prefix, totals) {
+    document.getElementById(`${prefix}-subtotal`).textContent = formatMoney(totals.subtotal);
+    document.getElementById(`${prefix}-shipping`).textContent = totals.shipping === 0 ? "FREE" : formatMoney(totals.shipping);
+    document.getElementById(`${prefix}-tax`).textContent = formatMoney(totals.tax);
+    document.getElementById(`${prefix}-total`).textContent = formatMoney(totals.total);
+}
+
 function renderCart() {
     const cartContainer = document.getElementById("cart-container");
     if (!cartContainer) return;
 
-    const subtotalElement = document.getElementById("cart-subtotal");
-    const shippingElement = document.getElementById("cart-shipping");
-    const totalElement = document.getElementById("cart-total");
     const checkoutButton = document.querySelector(".checkout-btn");
-    const cart = getCart();
+    const detailedCart = getDetailedCart();
 
-    if (cart.length === 0) {
+    if (detailedCart.length === 0) {
         cartContainer.innerHTML = '<p class="empty-cart-msg">Your cart is empty. <a href="products.html">Explore products</a></p>';
-        subtotalElement.textContent = "$0.00";
-        shippingElement.textContent = "Free over $50";
-        totalElement.textContent = "$0.00";
+        renderSummaryTotals("cart", calculateTotals([]));
+        document.getElementById("cart-shipping").textContent = "Free over $50";
         checkoutButton.disabled = true;
         return;
     }
 
-    const detailedCart = cart.map(item => ({
-        ...products.find(product => product.id === item.id),
-        quantity: item.quantity
-    })).filter(item => item.id);
-
     cartContainer.innerHTML = detailedCart.map(item => `
         <article class="cart-item">
-            <div class="cart-item-visual ${item.category}" aria-hidden="true">${item.icon}</div>
+            <div class="cart-item-visual ${item.category}">
+                <img src="${item.image}" alt="${item.alt}" width="86" height="65">
+            </div>
             <div class="cart-item-info">
                 <h3>${item.name}</h3>
-                <span class="item-price">$${item.price.toFixed(2)} each</span>
+                <span class="item-price">$${item.price.toFixed(2)} each · Line total ${formatMoney(Math.round(item.price * 100) * item.quantity)}</span>
             </div>
             <div class="cart-item-controls" aria-label="Quantity controls for ${item.name}">
                 <button class="qty-btn" type="button" data-cart-action="decrease" data-product-id="${item.id}" aria-label="Decrease ${item.name} quantity">−</button>
@@ -216,14 +255,158 @@ function renderCart() {
         </article>
     `).join("");
 
-    const subtotal = detailedCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shipping = subtotal >= 50 ? 0 : 9.99;
-    const total = subtotal + shipping;
-
-    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-    shippingElement.textContent = shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`;
-    totalElement.textContent = `$${total.toFixed(2)}`;
+    renderSummaryTotals("cart", calculateTotals(detailedCart));
     checkoutButton.disabled = false;
+}
+
+function renderOrderLines(detailedCart) {
+    return detailedCart.map(item => `
+        <li class="order-line">
+            <img src="${item.image}" alt="" width="64" height="48">
+            <span><strong>${item.name}</strong><small>Qty ${item.quantity} × $${item.price.toFixed(2)}</small></span>
+            <span class="order-line-total">${formatMoney(Math.round(item.price * 100) * item.quantity)}</span>
+        </li>
+    `).join("");
+}
+
+function setCheckoutStatus(message, isError = false) {
+    const status = document.getElementById("checkout-status");
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("is-error", isError);
+}
+
+function loadPayPalSdk() {
+    return new Promise((resolve, reject) => {
+        if (window.paypal) {
+            resolve(window.paypal);
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(PAYPAL_CLIENT_ID)}&currency=${PAYPAL_CURRENCY}&intent=capture&components=buttons`;
+        script.onload = () => window.paypal ? resolve(window.paypal) : reject(new Error("PayPal unavailable"));
+        script.onerror = () => reject(new Error("PayPal could not load"));
+        document.head.appendChild(script);
+    });
+}
+
+function toPayPalAmount(cents) {
+    return { currency_code: PAYPAL_CURRENCY, value: (cents / 100).toFixed(2) };
+}
+
+function renderCheckout() {
+    const checkoutItems = document.getElementById("checkout-items");
+    if (!checkoutItems) return;
+
+    const detailedCart = getDetailedCart();
+    if (detailedCart.length === 0) {
+        document.querySelector(".checkout-layout").hidden = true;
+        document.getElementById("checkout-empty").hidden = false;
+        return;
+    }
+
+    checkoutItems.innerHTML = renderOrderLines(detailedCart);
+    renderSummaryTotals("checkout", calculateTotals(detailedCart));
+
+    if (!PAYPAL_CLIENT_ID) {
+        setCheckoutStatus("PayPal sandbox payments are not configured yet.", true);
+        return;
+    }
+
+    setCheckoutStatus("Loading secure PayPal sandbox checkout…");
+    let orderedCart = [];
+
+    loadPayPalSdk().then(paypal => paypal.Buttons({
+        style: { layout: "vertical", shape: "rect", label: "pay" },
+        // Prices are re-read from the catalog when the order is created, not taken from saved cart data.
+        createOrder: (data, actions) => {
+            orderedCart = getDetailedCart();
+            const totals = calculateTotals(orderedCart);
+            return actions.order.create({
+                intent: "CAPTURE",
+                purchase_units: [{
+                    description: "NovaTech sandbox order",
+                    amount: {
+                        ...toPayPalAmount(totals.total),
+                        breakdown: {
+                            item_total: toPayPalAmount(totals.subtotal),
+                            shipping: toPayPalAmount(totals.shipping),
+                            tax_total: toPayPalAmount(totals.tax)
+                        }
+                    },
+                    items: orderedCart.map(item => ({
+                        name: item.name,
+                        sku: `NT-${item.id}`,
+                        unit_amount: toPayPalAmount(Math.round(item.price * 100)),
+                        quantity: String(item.quantity),
+                        category: "PHYSICAL_GOODS"
+                    }))
+                }]
+            });
+        },
+        onApprove: async (data, actions) => {
+            setCheckoutStatus("Confirming your sandbox payment…");
+            const details = await actions.order.capture();
+            const capture = details.purchase_units?.[0]?.payments?.captures?.[0];
+            const order = {
+                orderId: details.id,
+                captureId: capture?.id || "",
+                status: capture?.status || details.status,
+                payerName: details.payer?.name?.given_name || "",
+                placedAt: new Date().toISOString(),
+                items: orderedCart.map(({ id, name, price, quantity, image }) => ({ id, name, price, quantity, image })),
+                totals: calculateTotals(orderedCart)
+            };
+
+            try {
+                sessionStorage.setItem(ORDER_KEY, JSON.stringify(order));
+            } catch {
+                // The payment is complete even if the confirmation details cannot be stored.
+            }
+            localStorage.removeItem(CART_KEY);
+            window.location.href = "order-confirmation.html";
+        },
+        onCancel: () => setCheckoutStatus("Payment cancelled. Your cart has not changed."),
+        onError: () => setCheckoutStatus("PayPal could not complete the sandbox payment. Please try again.", true)
+    }).render("#paypal-button-container"))
+        .then(() => setCheckoutStatus("Choose PayPal or a test card to pay in sandbox mode."))
+        .catch(() => setCheckoutStatus("PayPal checkout could not load. Check your connection and refresh the page.", true));
+}
+
+function renderConfirmation() {
+    const confirmation = document.getElementById("order-confirmation");
+    if (!confirmation) return;
+
+    let order = null;
+    try {
+        order = JSON.parse(sessionStorage.getItem(ORDER_KEY));
+    } catch {
+        order = null;
+    }
+
+    if (!order?.orderId) {
+        confirmation.hidden = true;
+        document.getElementById("confirmation-empty").hidden = false;
+        return;
+    }
+
+    document.getElementById("confirmation-greeting").textContent = order.payerName
+        ? `Thank you, ${order.payerName}. Your payment was approved.`
+        : "Thank you. Your payment was approved.";
+    document.getElementById("confirmation-order-id").textContent = order.orderId;
+    document.getElementById("confirmation-capture-id").textContent = order.captureId || "Not provided";
+    document.getElementById("confirmation-status").textContent = order.status;
+    document.getElementById("confirmation-date").textContent = new Date(order.placedAt).toLocaleString("en-CA", {
+        dateStyle: "long",
+        timeStyle: "short"
+    });
+
+    const items = order.items
+        .map(item => ({ ...item, ...products.find(product => product.id === item.id) }))
+        .filter(item => item.name);
+    document.getElementById("confirmation-items").innerHTML = renderOrderLines(items);
+    renderSummaryTotals("confirmation", order.totals);
 }
 
 function setupProductActions() {
@@ -331,7 +514,7 @@ function setupCheckout() {
 
     checkoutButton.addEventListener("click", () => {
         if (!checkoutButton.disabled) {
-            showToast("Demo checkout complete—no payment or personal data was collected.");
+            window.location.href = "checkout.html";
         }
     });
 }
@@ -351,6 +534,11 @@ function setupPrivacyControl() {
     updateStatus();
     clearButton.addEventListener("click", () => {
         localStorage.removeItem(CART_KEY);
+        try {
+            sessionStorage.removeItem(ORDER_KEY);
+        } catch {
+            // Session storage may be unavailable; the cart has still been cleared.
+        }
         updateCartBadge();
         updateStatus();
         showToast("Saved NovaTech cart data cleared.");
@@ -409,6 +597,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderFeaturedProducts();
     renderProducts();
     renderCart();
+    renderCheckout();
+    renderConfirmation();
     setupProductActions();
     setupFilters();
     setupMobileMenu();

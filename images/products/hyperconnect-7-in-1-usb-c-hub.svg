@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="t"><title id="t">HyperConnect 7-in-1 USB-C hub with HDMI, SD and USB ports</title>
+<ellipse cx="160" cy="176" rx="118" ry="10" fill="#081426" opacity=".12"/>
+<path d="M40 128c-26 0-26-60 6-60h10" stroke="#132743" stroke-width="8" fill="none" stroke-linecap="round"/>
+<rect x="52" y="60" width="18" height="16" rx="4" fill="#56c8ff"/>
+<rect x="70" y="100" width="210" height="64" rx="18" fill="#132743"/>
+<rect x="78" y="108" width="194" height="48" rx="12" fill="#1f3a5f"/>
+<g fill="#081426"><rect x="90" y="122" width="26" height="14" rx="3"/><rect x="124" y="122" width="22" height="12" rx="2"/><rect x="152" y="122" width="22" height="12" rx="2"/><rect x="180" y="122" width="22" height="12" rx="2"/><rect x="210" y="124" width="22" height="7" rx="2"/><rect x="240" y="124" width="20" height="8" rx="4"/></g>
+<g fill="#56c8ff"><rect x="128" y="126" width="14" height="4"/><rect x="156" y="126" width="14" height="4"/><rect x="184" y="126" width="14" height="4"/></g>
+<circle cx="258" cy="146" r="3" fill="#71e6c1"/>
+<path d="M60 128H70" stroke="#132743" stroke-width="8" stroke-linecap="round"/>
+</svg>

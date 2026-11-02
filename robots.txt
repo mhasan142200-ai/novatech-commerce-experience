@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /novatech-commerce-experience/checkout.html
+Disallow: /novatech-commerce-experience/order-confirmation.html
+
+Sitemap: https://mhasan142200-ai.github.io/novatech-commerce-experience/sitemap.xml

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="t"><title id="t">SoundWave Mini water-resistant Bluetooth speaker</title>
+<ellipse cx="160" cy="210" rx="72" ry="10" fill="#081426" opacity=".12"/>
+<rect x="104" y="40" width="112" height="164" rx="44" fill="#132743"/>
+<rect x="114" y="52" width="92" height="140" rx="36" fill="#1f3a5f"/>
+<g fill="#081426"><circle cx="138" cy="86" r="3.5"/><circle cx="160" cy="86" r="3.5"/><circle cx="182" cy="86" r="3.5"/><circle cx="127" cy="104" r="3.5"/><circle cx="149" cy="104" r="3.5"/><circle cx="171" cy="104" r="3.5"/><circle cx="193" cy="104" r="3.5"/><circle cx="138" cy="122" r="3.5"/><circle cx="160" cy="122" r="3.5"/><circle cx="182" cy="122" r="3.5"/><circle cx="127" cy="140" r="3.5"/><circle cx="149" cy="140" r="3.5"/><circle cx="171" cy="140" r="3.5"/><circle cx="193" cy="140" r="3.5"/><circle cx="138" cy="158" r="3.5"/><circle cx="160" cy="158" r="3.5"/><circle cx="182" cy="158" r="3.5"/></g>
+<rect x="138" y="30" width="44" height="14" rx="7" fill="#ff5c74"/>
+<path d="M232 92c12 16 12 44 0 60M248 78c20 26 20 62 0 88M88 92c-12 16-12 44 0 60M72 78c-20 26-20 62 0 88" stroke="#ff5c74" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/>
+</svg>

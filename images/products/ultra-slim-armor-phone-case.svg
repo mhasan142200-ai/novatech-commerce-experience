@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="t"><title id="t">Ultra-Slim Armor phone case with reinforced corners</title>
+<ellipse cx="160" cy="218" rx="70" ry="9" fill="#081426" opacity=".12"/>
+<g transform="rotate(-8 160 120)">
+<rect x="108" y="22" width="104" height="192" rx="22" fill="#132743"/>
+<rect x="116" y="30" width="88" height="176" rx="16" fill="#1f3a5f"/>
+<rect x="126" y="40" width="40" height="46" rx="12" fill="#081426"/>
+<circle cx="138" cy="54" r="8" fill="#56c8ff" stroke="#081426" stroke-width="3"/><circle cx="155" cy="72" r="8" fill="#56c8ff" stroke="#081426" stroke-width="3"/><circle cx="155" cy="52" r="3" fill="#ffc857"/>
+<path d="M108 48v-4a22 22 0 0 1 22-22h4M186 22h4a22 22 0 0 1 22 22v4M212 188v4a22 22 0 0 1-22 22h-4M134 214h-4a22 22 0 0 1-22-22v-4" stroke="#56c8ff" stroke-width="8" stroke-linecap="round" fill="none"/>
+<text x="160" y="160" fill="#56c8ff" font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">N</text>
+</g></svg>
