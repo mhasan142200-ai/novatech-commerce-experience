@@ -347,8 +347,24 @@ function renderCheckout() {
         },
         onApprove: async (data, actions) => {
             setCheckoutStatus("Confirming your sandbox payment…");
-            const details = await actions.order.capture();
+            let details;
+            try {
+                details = await actions.order.capture();
+            } catch (error) {
+                // A declined card can be retried with another funding source without restarting checkout.
+                if (String(error?.message || error).includes("INSTRUMENT_DECLINED")) {
+                    setCheckoutStatus("Your payment method was declined. Please choose another card or PayPal account.", true);
+                    return actions.restart();
+                }
+                setCheckoutStatus("The payment could not be completed, so you were not charged. Your cart has not changed.", true);
+                return undefined;
+            }
+
             const capture = details.purchase_units?.[0]?.payments?.captures?.[0];
+            if (capture?.status && !["COMPLETED", "PENDING"].includes(capture.status)) {
+                setCheckoutStatus(`PayPal reported the payment as ${capture.status.toLowerCase()}. Your cart has not changed.`, true);
+                return undefined;
+            }
             const order = {
                 orderId: details.id,
                 captureId: capture?.id || "",
@@ -368,7 +384,7 @@ function renderCheckout() {
             window.location.href = "order-confirmation.html";
         },
         onCancel: () => setCheckoutStatus("Payment cancelled. Your cart has not changed."),
-        onError: () => setCheckoutStatus("PayPal could not complete the sandbox payment. Please try again.", true)
+        onError: () => setCheckoutStatus("PayPal could not complete the sandbox payment. You were not charged; please try again.", true)
     }).render("#paypal-button-container"))
         .then(() => setCheckoutStatus("Choose PayPal or a test card to pay in sandbox mode."))
         .catch(() => setCheckoutStatus("PayPal checkout could not load. Check your connection and refresh the page.", true));

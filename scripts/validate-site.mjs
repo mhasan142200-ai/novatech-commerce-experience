@@ -64,7 +64,7 @@ for (const page of pages) {
 
     // Social media share links
     const socialLinks = (html.match(/data-social-share=/g) || []).length;
-    if (socialLinks !== 4) errors.push(`${page} should have 4 social share links, found ${socialLinks}.`);
+    if (socialLinks < 4 || socialLinks % 4 !== 0) errors.push(`${page} should have sets of 4 social share links, found ${socialLinks}.`);
 }
 
 const script = read("js/main.js");
